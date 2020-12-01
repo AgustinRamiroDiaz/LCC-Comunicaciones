@@ -1,0 +1,187 @@
+//Ejercicio 1
+
+pc1: 192.168.0.101
+pc2: 192.168.0.102
+pc3: 192.168.0.103
+pc4: 192.168.0.104
+pc5: 192.168.0.105
+pc6: 192.168.0.106
+pc7: 192.168.0.107
+pc8: 192.168.0.108
+pc9: 192.168.0.109
+pc10: 192.168.0.110
+pc11 (web server): 192.168.0.111
+pc11 (dns-mail server): 192.168.0.112
+
+Dominio: fceia.unr.ar
+
+// --------------------------------------
+// En named.conf.default-zones
+
+zone "."{
+  type hint;
+  file "etc/bind/db.root";
+};
+
+zone "localhost"{
+  type master;
+  file "etc/bind/db.local";
+};
+
+zone "127.in-addr-.arpa"{
+  type master;
+  file "etc/bind/db.127";
+};
+
+zone "0.in-addr-.arpa"{
+  type master;
+  file "etc/bind/db.0";
+};
+
+zone "255.in-addr-.arpa"{
+  type master;
+  file "etc/bind/db.255";
+};
+
+// --------------------------------------
+// En etc/bind/named.conf.local
+
+// Busquedas directas
+zone "fceia.unr.ar"{
+  type master;
+  file "etc/bind/db.fceia";
+  allow-query{any};
+  allow-transfer{slaves};
+};
+
+// Busquedas indirectas
+zone "0.168.192.in-addr.arpa"{
+  type master;
+  file "etc/bind/rev.192";
+};
+
+// --------------------------------------
+// En etc/bind/db.fceia
+
+//servidor maestro, mail admin, serial, refresh, retry, expire, default TTL
+fceia.unr.ar. IN SOA dns.fceia.unr.ar. admin.fceia.unr.ar {2020111813; 604800;
+86400; 2419200; 604800};
+
+fceia.unr.ar. IN NS dns.fceia.unr.ar.
+fceia.unr.ar. IN MX 10 mail.fceia.unr.ar.
+
+pc1.fceia.unr.ar. IN A 192.168.0.101
+pc2.fceia.unr.ar. IN A 192.168.0.102
+pc3.fceia.unr.ar. IN A 192.168.0.103
+pc4.fceia.unr.ar. IN A 192.168.0.104
+pc5.fceia.unr.ar. IN A 192.168.0.105
+pc6.fceia.unr.ar. IN A 192.168.0.106
+pc7.fceia.unr.ar. IN A 192.168.0.107
+pc8.fceia.unr.ar. IN A 192.168.0.108
+pc9.fceia.unr.ar. IN A 192.168.0.109
+pc10.fceia.unr.ar. IN A 192.168.0.110
+www.fceia.unr.ar. IN A 192.168.0.111
+dns.fceia.unr.ar. IN A 192.168.0.112
+mail.fceia.unr.ar. IN A 192.168.0.112
+
+// --------------------------------------
+// En etc/bind/rev.fceia
+
+fceia.unr.ar. IN SOA dns.fceia.unr.ar. admin.fceia.unr.ar {2020111813; 604800;
+86400; 2419200; 604800};
+
+ IN NS dns.fceia.unr.ar. //REVISAR
+
+101.0.168.192.IN-ADDR.ARPA. IN PTR pc1.fceia.unr.ar. 
+102.0.168.192.IN-ADDR.ARPA. IN PTR pc2.fceia.unr.ar. 
+103.0.168.192.IN-ADDR.ARPA. IN PTR pc3.fceia.unr.ar. 
+104.0.168.192.IN-ADDR.ARPA. IN PTR pc4.fceia.unr.ar. 
+105.0.168.192.IN-ADDR.ARPA. IN PTR pc5.fceia.unr.ar. 
+106.0.168.192.IN-ADDR.ARPA. IN PTR pc6.fceia.unr.ar. 
+107.0.168.192.IN-ADDR.ARPA. IN PTR pc7.fceia.unr.ar. 
+108.0.168.192.IN-ADDR.ARPA. IN PTR pc8.fceia.unr.ar. 
+109.0.168.192.IN-ADDR.ARPA. IN PTR pc9.fceia.unr.ar. 
+110.0.168.192.IN-ADDR.ARPA. IN PTR pc10.fceia.unr.ar. 
+111.0.168.192.IN-ADDR.ARPA. IN PTR www.fceia.unr.ar. 
+112.0.168.192.IN-ADDR.ARPA. IN PTR dns.fceia.unr.ar. 
+112.0.168.192.IN-ADDR.ARPA. IN PTR mail.fceia.unr.ar.
+
+//Ejercicio 2
+
+red1: 200.13.147.32/27
+red2: 200.13.147.64/27
+red3: 200.13.147.96/27
+
+Dominio principal: netflix.ar
+Dominio principal: lucifer.netflix.ar
+
+ns1.netflix.ar es maestro para la resolución directa e inversa
+200.13.147.60
+
+ns2.netflix.ar es esclavo para la resolución directa
+200.13.147.90
+
+servidor de mail primario: mx.netflix.ar - 200.13.147.59
+servidor de mail primario: mx.lucifer.netflix.ar - 200.13.147.113
+
+// --------------------------------------
+// En named.conf de ns1
+
+//Busquedas directas
+zone "netflix.ar"{
+  type master;
+  file "etc/bind/db.netflix";
+  allow-query{any};
+  allow-transfer{slaves};
+};
+
+// Busquedas indirectas
+zone "147.13.200.in-addr.arpa"{
+  type master;
+  file "etc/bind/rev.netflix";
+};
+
+// --------------------------------------
+// En named.conf de ns2
+
+//Busquedas directas
+zone "netflix.ar"{
+  type slave;
+  masters{200.13.147.60}
+  file "etc/bind/db.netflix";
+};
+
+// --------------------------------------
+// En db.netflix en ns1 (igual para ns2)
+
+$TTL 1D
+$Origin netflix.ar
+@ IN SOA ns1.netflix.ar. adminNetflix.netflix.ar {2020111813; 604800;
+86400; 2419200; 604800};
+
+IN NS ns1.netflix.ar
+IN NS ns2.lucifer.netflix.ar
+IN MX 10 mx.netflix.ar
+IN MX 20 mx.lucifer.netflix.ar
+
+www IN A 200.13.147.60
+ns1 IN CNAME www
+ns2 IN A 200.13.147.90
+mx IN A 200.13.147.59
+mx.lucifer IN A 200.13.147.113
+
+// --------------------------------------
+// En rev.netflix en ns1 (igual para ns2)
+
+$TTL 1D
+$Origin 147.13.200.in-addr.arpa.
+@ IN SOA ns1.netflix.ar. adminNetflix.netflix.ar {2020111813; 604800;
+86400; 2419200; 604800};
+
+IN NS ns1.netflix.ar
+
+60 IN A www.netflix.ar
+60 IN PTR ns1.netflix.ar
+90 IN PTR ns2.netflix.ar
+59 IN A mx.netflix.ar
+113 IN A mx.lucifer.netflix.ar

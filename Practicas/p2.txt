@@ -1,0 +1,311 @@
+//Ejercicios de las diapos de clase
+
+[10000000].00001010.00000010.00011110 \in Clase A
+[11000000.01100100].00001010.00100001 \in Clase B
+[177.100].18.5 == b10110001.100.18.5 \in Clase B
+[119].18.45.0 == b01110111.18.45.0 \in Clase A
+[209.240.80].77 == b11010001.240.80.77 \in Clase C
+[199.155.77].56 == b11000111.155.77.56 \in Clase C
+
+Red   -  Dirección de red   - Difusión en la red - Clase
+Red A -    20.0.0.0/8       -   20.193.52.57   -   A
+Red B -   150.15.0.0/16     -   150.15.255.255   -   B
+Red C -  193.146.62.0/24    -   193.146.62.255   -   C
+
+A -   Red 1    - Router 1 -   Red 2   - Router 2 -    Red 3   - B
+   MTU = 1500               MTU = 620              MTU = 1500
+Un mensaje de 1400 se fragmenta en 2 de 600 y uno de 200
+
+//Subnetteo en clase C
+Mascara de subred - Binario  - nro. subredes - nro host x red
+193.52.57.0     - 00000000 -      1          - 254
+193.52.57.128   - 10000000 -      2          - 126
+193.52.57.192   - 11000000 -      4          - 62
+193.52.57.224   - 11100000 -      8          - 30
+193.52.57.240   - 11110000 -     16          - 14
+193.52.57.248   - 11111000 -     32          - 6
+193.52.57.252   - 11111100 -     64          - 2
+193.52.57.254   - 11111110 -    128          - 0 -
+193.52.57.255   - 11111111 -    128          - 0 -
+
+//Una organización a la que le asignan la IP 190.100.10.0/24 (Clase B) quiere direccionas 60 pcs en la red 3, 28 pcs en la red 2 y 5 en la red 1
+Red 1 - Router 3 - Red 2 - Router 2 - Red 3 - Router 1 - RInternet
+
+Máscara de subred: 255.255.255.192(11-000000)
+Red 1: 190.100.10.0 ->
+  PC1-190.100.10.1, PC2-190.100.10.2, ..., PC60-190.100.10.60
+Red 2: 190.100.10.64 ->
+  PC1-190.100.10.65, PC2-190.100.10.66, ..., PC28-190.100.10.93
+Red 3: 190.100.10.128 ->
+  PC1-190.100.10.129, PC2-190.100.10.130, ..., PC5-190.100.10.134
+Router 1: (interfaz R1 a internet) y PC5-190.100.10.135 (red 3)
+Router 2: 190.100.10.94 (red 2) y 190.100.10.136 (red 3)
+Router 3: 190.100.10.94 (red 2) y 190.100.10.61 (red 1)
+
+Tabla de Routeo de Router 1:
+RInternet                   -> Directa
+190.100.10.128 (Red 3)      -> Directa
+190.100.10.64 (Red 2)       -> 190.100.10.94 (red 2)
+190.100.10.0 (Red 1)        -> 190.100.10.61 (red 1)
+
+Tabla de Routeo de Router 2:
+RInternet                   -> (interfaz R1 a internet)
+190.100.10.128 (Red 3)      -> Directa
+190.100.10.64 (Red 2)       -> Directa
+190.100.10.0 (Red 1)        -> 190.100.10.61 (red 1)
+
+Tabla de Routeo de Router 3:
+RInternet                   -> (interfaz R1 a internet)
+190.100.10.128 (Red 3)      -> 190.100.10.136 (red 3)
+190.100.10.64 (Red 2)       -> Directa
+190.100.10.0 (Red 1)        -> Directa
+
+
+//Ejercicio 1
+IPv4
+Clase A - 0 /8
+Clase B - 10 /16
+Clase C - 110 /24
+Clase D - 1110
+Clase E - 11110
+
+Clase   -         Rango              - Mascara Subred - direcciones privadas
+Clase A -     1.0.0.0 a 127.0.0.0    -   255.0.0.0    - 10.0.0.0 a 10.193.52.57
+Clase B -   128.0.0.0 a 191.255.0.0  -  255.255.0.0   - 172.16.0.0 a 172.31.255.255
+Clase C -  192.0.0.0 a 223.255.255.0 - 255.255.255.0  - 192.168.0.0 a 192.168.255.255
+Clase D -  224.0.0.0 a 239.193.52.57 -       -      -
+Clase E -  240.0.0.0 a 193.52.57.255 -       -      -
+
+//Ejercicio 2
+
+IP            -  Clase -      Red       -   Host    -    Máscara
+220.200.23.1  -    C   -   220.200.23   -    1      - 255.255.255.0
+148.17.0.1    -    B   -    148.17      -   0.1     - 255.255.0.0
+33.15.4.13    -    A   -      33        - 15.4.13   - 255.0.0.0
+249.249.80.78 -    E   -      -         -    -      -      -
+230.230.45.68 -    D   -      -         -    -      -      -
+192.168.12.8  -    C   -   192.168.12   -    4      - 255.255.255.0
+177.100.18.4  -    B   -    177.100     -   18.4    - 255.255.0.0
+95.250.91.99  -    A   -       95       - 250.91.99 - 255.0.0.0
+
+//Ejercicio 3
+para la IP 174.56.7.0 (Clase B) se quieren al menos 60 hosts y 1020 subredes
+La máscara adecuada es 255.255.255.192 (11111111).(11111111).(11111111).(1100000) ó /26
+
+Este subneteo obtiene 2^{10} = 1024 subredes de 64-2 = 62 hosts c/u
+
+//Ejercicio 4
+para la IP 210.66.56.0 (Clase C) se quieren al menos 30 hosts y 6 subredes
+La máscara adecuada es 255.255.255.224 (11100000) o /27
+
+
+//Ejercicio 5
+para la IP 193.52.57.0 (Clase C) se quieren al menos 8 subredes
+Una máscara adecuada sería 255.255.255.224 (11100000) (8 subredes de 30 hosts c/u)
+
+Subred 1 - 193.52.57.0  (000-00000) - rango de hosts: 193.52.57.1 a 193.52.57.30
+Subred 2 - 193.52.57.32 (001-00000) - rango de hosts: 193.52.57.33 a 193.52.57.62
+Subred 3 - 193.52.57.64 (010-00000) - rango de hosts: 193.52.57.65 a 193.52.57.94
+Subred 4 - 193.52.57.96 (011-00000) - rango de hosts: 193.52.57.97 a 193.52.57.126
+Subred 5 - 193.52.57.128 (100-00000)- rango de hosts: 193.52.57.129 a 193.52.57.158
+Subred 6 - 193.52.57.160 (101-00000)- rango de hosts: 193.52.57.161 a 193.52.57.190
+Subred 7 - 193.52.57.192 (110-00000)- rango de hosts: 193.52.57.193 a 193.52.57.222
+Subred 8 - 193.52.57.224 (111-00000)- rango de hosts: 193.52.57.225 a 193.52.57.254
+
+La dirección de broadcast para la tercer sucursal es:
+193.52.57.95 (010-11111)
+
+//Ejercicio 6
+--Apartado i
+El host A envia un paquete IP a B
+
+Al estar A y B en la misma red, el paquete llega hasta el Router1, con una máscara se verifica que sea un envio Directo y se envía al host B.
+
+--Apartado ii
+El host A envia un paquete IP a C
+
+El paquete llega a R1, en su tabla de routeo aparece en siguiente paso: 220.60.70.3 (red dorsal). Luego llega al R3 y en su tabla de routeo aparece envio Directo.
+
+//Ejercicio 7
+--Apartado i
+Se cuenta con 3 juegos de direcciones IP públicas: 200.13.147.0, 200.13.148.0 y 200.13.149.0
+
+Red 1: 200.13.147.0
+A: 200.13.147.1
+B: 200.13.147.2
+C: 200.13.147.3
+
+Red 2: 200.13.148.0
+D: 200.13.148.1
+E: 200.13.148.2
+
+Red 3: 200.13.149.0
+F: 200.13.149.1
+G: 200.13.149.2
+
+R:
+(interfaz a red1): 200.13.147.4
+(interfaz a red2): 200.13.148.3
+(interfaz a red3): 200.13.149.3
+(interfaz a internet): a.b.c.d
+
+Tabla de routeo de R:
+Destino       Mascara    Gateway
+200.13.147.0    /24      Directa
+200.13.148.0    /24      Directa
+200.13.149.0    /24      Directa
+a.b.c.d         /24      Directa
+
+--Apartado ii
+Se cuenta con la dirección de IP routeable 200.13.147.0/24 (Clase C). Las redes tienen como máximo 3 hosts
+Máscara de subred: 255.255.255.248(11111-000) o /29
+
+Red 1: 200.13.147.0
+A: 200.13.147.1
+B: 200.13.147.2
+C: 200.13.147.3
+
+Red 2: 200.13.147.8
+D: 200.13.147.9
+E: 200.13.147.10
+
+Red 3: 200.13.147.16
+F: 200.13.147.17
+G: 200.13.147.18
+
+Internet: 200.13.147.24
+
+R:
+(interfaz a red1): 200.13.147.4
+(interfaz a red2): 200.13.147.11
+(interfaz a red3): 200.13.147.19
+(interfaz a internet): 200.13.147.25
+
+Tabla de routeo de R:
+Destino       Mascara    Gateway
+200.13.147.4    /29      Directa
+200.13.147.11   /29      Directa
+200.13.147.19   /29      Directa
+200.13.147.24   /29      Directa
+0.0.0.0         /0       200.13.147.4 (red 1 arranque)
+
+//Ejercicio 8
+Se dispone de una dirección IP: 199.199.20.0/24 (Clase C)
+
+Primer subneteo - Máscara: 255.255.255.128(11-000000) ó /26
+(Red 1) 199.199.20.0
+(Red 5) 199.199.20.64
+(Red 2 y 3) 199.199.20.128
+(Red 4 e Internet) 199.199.20.192
+
+Segundo subneteo - Máscara: 255.255.255.224(111-00000) ó /27
+(Red 2) 199.199.20.128
+(Red 3) 199.199.20.160
+(Red 4) 199.199.20.192
+(Red Internet) 199.199.20.224
+
+Oficial
+(Red 1) 199.199.20.0
+(Red 2) 199.199.20.128
+(Red 3) 199.199.20.160
+(Red 4) 199.199.20.192
+(Red 5) 199.199.20.64
+(Red Internet) 199.199.20.224
+
+R1
+(interface Internet) 199.199.20.225
+(interface Red 2) 199.199.20.129
+(interface Red 1) 199.199.20.1
+
+R2
+(interface Red 2) 199.199.20.130
+(interface Red 3) 199.199.20.161
+
+R3
+(interface Red 1) 199.199.20.2
+(interface Red 3) 199.199.20.162
+(interface Red 4) 199.199.20.193
+(interface Red 5) 199.199.20.65
+
+Tabla routeo R1:
+Dirección                         Mascara      Gateway
+199.199.20.0(Red 1)                 /26        Directo
+199.199.20.128(Red 2)               /27        Directo
+199.199.20.160 (Red 3)              /27        199.199.20.2 (R3 a red1)
+199.199.20.192 (Red 4)              /27        199.199.20.2 (R3 a red1)
+199.199.20.64 (Red 5)               /26        199.199.20.2 (R3 a red1)
+199.199.20.224 (Red Internet)       /27        Directo
+
+Tabla routeo R2:
+Dirección                         Mascara      Gateway
+199.199.20.0(Red 1)                 /26        199.199.20.162 (R3 a red3)
+199.199.20.128(Red 2)               /27        Directo
+199.199.20.160 (Red 3)              /27        Directo
+199.199.20.192 (Red 4)              /27        199.199.20.162 (R3 a red3)
+199.199.20.64 (Red 5)               /26        199.199.20.162  (R3 a red3)
+199.199.20.224 (Red Internet)       /27        199.199.20.129 (R1 a r2)
+
+Tabla routeo R3:
+Dirección                         Mascara      Gateway
+199.199.20.0(Red 1)                 /26        Directo
+199.199.20.128(Red 2)               /27        199.199.20.1 (R1 a red1)
+199.199.20.160 (Red 3)              /27        Directo
+199.199.20.192 (Red 4)              /27        Directo
+199.199.20.64 (Red 5)               /26        Directo
+199.199.20.224 (Red Internet)       /27        199.199.20.1 (R1 a red1)
+
+//Ejercicio 9
+Se dispone de una dirección 200.113.2.192/26 (ya está subnetteado)
+1 -> no necesita internet (el resto si)
+red 2 -> 11 hosts
+red 3 -> 28 hosts
+red 4 -> 12 hosts
+
+primer subnetteo: Mascara de subred 255.255.255.224(11(1-00000)) ó /27
+(red 2 y 4) 200.113.2.192
+(red 3) 200.113.2.224
+
+segundo subnetteo: Mascara de subred 255.255.255.248(11(1-(1-0000))) ó /28
+(red 2) 200.113.2.192
+(red 4) 200.113.2.208
+
+--No necesita internet
+(red 1) 192.168.0.0 (ip-privada)
+
+R1
+(red 1) 192.168.0.1
+(red 2) 200.113.2.193
+(red 3) 200.113.2.225
+
+R2
+(red 2) 200.113.2.194
+(red 4) 200.113.2.209
+(red Internet) 200.100.2.2/30
+
+R3
+(red 3) 200.113.2.226
+(red 4) 200.113.2.210
+
+Tabla routeo R1:
+Dirección                         Mascara      Gateway
+192.168.0.0 (red 1)                 /24        Directa
+200.113.2.192 (red 2)               /28        Directa
+200.113.2.224 (red 3)               /27        Directa
+200.113.2.208 (red 4)               /28        200.113.2.194 (R2 a red2)
+200.100.2.0 (internet)              /30        200.113.2.194 (R2 a red2)
+
+Tabla routeo R2:
+Dirección                         Mascara      Gateway
+192.168.0.0 (red 1)                 /24        200.113.2.193 (R1 a red2)
+200.113.2.192 (red 2)               /28        Directa
+200.113.2.224 (red 3)               /27        200.113.2.193 (R1 a red2)
+200.113.2.208 (red 4)               /28        Directa
+200.100.2.0 (internet)              /30        Directa
+
+Tabla routeo R3:
+Dirección                         Mascara      Gateway
+192.168.0.0 (red 1)                 /24        200.113.2.225 (R1 a red3)
+200.113.2.192 (red 2)               /28        200.113.2.225 (R1 a red3)
+200.113.2.224 (red 3)               /27        Directa
+200.113.2.208 (red 4)               /28        Directa
+200.100.2.0 (internet)              /30        200.113.2.209 (R2 a red4)

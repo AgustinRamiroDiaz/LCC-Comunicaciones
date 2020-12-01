@@ -1,0 +1,166 @@
+//Ejercicio 1
+En ejercicios resueltos.
+
+//Ejercicio 2
+Si una red está forma por 5 dispositivos y se produce una falla en la conexión con la topología
+- Malla: la red prácticamente no sufre interrupciones
+- Estrella: si ocurre en el nodo central, la red se detiene. Si no, solamente se daNa el módulo del nodo que se detuvo.
+- Bus: se detiene toda la red
+- Anillo: se detiene una porción de la red.
+
+// Ejercicio 3
+fMax = 20KHz. Por el teorema de Nyquist se deben emplear al menos dos muestras por período. Fmuestreo > 2 fMax -> Fmuestreo > 40KHz
+
+//Ejercicio 4
+Capacidad de un canal entre 3MHz y 4MHz, SNR = 24dB.
+
+Capacidad del canal = 4-3 = 1MHz
+SNR = 10 log_{10}(S/N) -> S/N ~= 251.19
+
+Por Shannon
+TBM = B log_{2}(1 + S/N) -> TBM = 1 log_{2}(1 + 251.19) = 7.98 megabits/seg
+
+Por Nyquist
+TBM = 2 B log_{2}(V) -> V = 2^(TBM / 2B) = 2^(TBM / 2B) = 16
+
+//Ejercicio 5
+Para mejorar el rendimiento de una red saturada: switch
+Interconectar 2 dispositivos separados más de 300 metros: repetidor
+Interconectar 2 redes con pocas máquinas y poco tráfico: hub (centraliza el cableado y permite escalar)
+Interconectar 2 redes que utilicen diferentes estándares: bridge
+
+//Ejercicio 6
+Los aspectos que definen la elección del medio de transmisión son:
+- escala
+- 
+
+//Ejercicio 7
+C está en el alcance de A dado que recibe puede identificar el momento en el que A envia un RTS. D por otro lado probablemente esté en el rango de B, dado que identifica el CTS de B pero no en el alcance de A.
+
+//Ejercicio 8
+Capa de enlace
+Funciones de la subcapa MAC (de acceso al medio):
+  - recepción y transmisión: ensamblado de datos en trama y detección y o corrección de errores
+  - administra el acceso al medio: de forma estática o dinámica
+Funciones de la subcapa LLC (control de enlace lógico):
+  - provee una interfaz de servicio hacia las capas superiores además de realizar control de flujo y errores
+
+//Ejercicio 9
+El enmarcado corresponde a orientados a caracteres de inicio y final con caracteres de relleno
+
+DLE-STX ----> inicio de la trama
+DLE-ETX -----> fin de la trama
+
+DLE-STX-STX-DLE-DLE-ABC-DLE-ETX-DLE-BCD-DLE-STX
+(DLE-STX)-STX-(DLE-DLE)-ABC-(DLE-ETX)      (se ignora)-DLE-BCD-DLE-STX
+inicio       duplicación   fin
+
+Mensaje original: STX-DLE-ABC
+
+//Ejercicio 10
+Servicio para la capa 3 cuando
+
+  - Hay una tasa de errores baja
+Sin conexión y sin reconocimiento (los errores son improbables)
+
+  - Tiene un medio de transmisión inestable
+Sin conexión y con reconocimiento (se confirma la recepción o se reenvia)
+
+  - Necesita transmitir en tiempo real
+Con conexión y con reconocimiento (garantía de orden y de no errores)
+
+  - Datos multimedia con control de errores
+Con conexión y sin reconocimiento (se establece la conexión y se garantiza orden y correctitud)
+
+//Ejercicio 11
+Ver diapos
+
+//Ejercicio 12
+En el papel
+
+//Ejercicio 13
+El problema de la estación oculta se da cuando 3 máquinas A, B y C se disponen de forma que: A y C están al alcance de B, pero A no está en el alcance de C y viceversa. Cuando A quiere transmitir a C, A detecta el medio libre y transmite. Mientras A transmite, C transmite porque también detecta el medio libre y se produce una colisión en B.
+
+El problema se soluciona mediante un protocolo CSMA/CD con estilo MACAW (que implementa tramas de control como RTS, CTS, ACK y NAV).
+
+//Ejercicio 14
+--Apartado a
+Bajo la arquitectura no es posible usar el protocolo CSMA/CD por el siguiente escenario (también se puede usar el problema de la estación oculta):
+
+- E se desea comunicar con B
+- B se desea comunicar con C entonces escucha el canal y concluye erróneamente que no tiene que transmitir.
+
+Como los enlaces de radio son semi-duplex, no pueden transmitir y escuchar al mismo tiempo en una sola frecuencia.
+
+--Apartado b
+E ___RTS______Datos_______________
+B _______CTS_________Ack__________
+C ______NAV----------NAV__________ (C está en el alcance de E)
+A ___________NAV----------NAV_____ (A no está en el alcance de E)
+D ___________NAV----------NAV_____ (D no está en el alcance de E)
+
+//Ejercicio 15
+Escribo la mínima cantidad de restricciones. Después hay que diseNar las redes de forma que las cumplan (posiblemente agregando más restricciones)
+-- a
+A y B están en una misma red y C y D en otra con alcances excluyentes
+
+-- b
+Alguien se trata de comunicar con A
+
+-- c
+A se estaba comunicando con B y cuando termina C se quiere comunicar con A. Además, D está al alcance de A.
+
+Ejemplo particular: todas en la misma red (hay que agregar NAVs)
+
+//Ejercicio 16
+Si un nodo funcionara como maestro en dos piconets, los nodos esclavos de ambas piconets responderían a el por lo que en realidad sería una piconet con hasta 14 esclavos, lo cual no es posible.
+
+//Ejercicio 17
+La versión 4 también tiene modo clásico o modo de alta velocidad.
+
+//Ejercicio 18
+La versión smart se suele presentar como una versión más chica y más optimizada que la estandar aunque diferentes objetivos de diseNo y desarrollo.
+En una piconet de un BT estandar, un maestro puede comunicarse con hasta 7 esclavos sobre los mismos canales físicos. Tanto maestro como esclavo son sincrónicos. En una piconet de un BLE,  un maestro puede comunicarse con más 7 esclavos sobre canales físicos separados. Tanto maestro como esclavo son asincrónicos.
+Un dispositivo BLE puede elegir entre las topologias broadcasting o de conexiones (se usa cuando se quiere transmitir bidireccionalmente y sigue un esquema maestro-esclavo).
+
+//Ejercicio 19
+No puede ya que tanto maestro como esclavos son asincrónicos.
+Ahorrro de energia (BLE)
+
+//Ejercicio 20
+COMPLETAR
+
+//Ejercicio 21
+Los principales objetivos son:
+- Incrementar las tasas de datos de los usuarios (downlink y uplink)
+- Reducir retardos tanto en el establecimiento de la conexión como en la transmisión
+- Ancho de banda escalable
+- Mejorar la eficiencia espectral
+- Arquitectura de red simplificada y con IP
+- La interfase debe poder soportar diferentes tipos de usuarios
+- Consumo de energía razonable para los terminales móviles
+
+COMPLETAR
+
+//Ejercicio 22
+Practica resuelta
+
+//Ejercicio 23
+Practica resuelta
+
+//Ejercicio 24
+Ventajas de OFDMA:
+- Diversidad multiusuario: La asignación de subportadoras a usuarios se realiza en forma dinámica permitiendo cambiar en períodos cortos de tiempo dicha asignación a través de estrategias de scheduling.
+- Diversidad frecuencial: Es posible asignar a un mismo usuario subportadoras no contiguas, suficientemente   separadas   como   para   que   el   estado   del   canal   en   las   mismas   sea independiente.
+- Robustez frente a la propagación multicamino: Esta técnica logra ser muy robusta frente a la interferencia intersimbólica resultante de la propagación multicamino y además puedecombatir la distorsión por medio de técnicas de ecualización en el dominio de la frecuencia.
+- Flexibilidad en la banda asignada: Proporciona una forma sencilla de acomodar diferentes velocidades de transmisión a los diferentes usuarios en función de los requerimientos de servicio de cada uno.
+- Elevada granularidad en los recursos asignables: Útil para acomodar servicios con diferentes requerimientos de calidad.
+
+Desventajas de OFMDA:
+- Elevada relación entre la potencia instantánea y la potencia media
+- Susceptibilidad  frente a  errores  de frecuencia: Cuando existen desplazamientos  en la frecuencia   de   las   subportadoras   respecto   de   su   frecuencia   de   referencia   se   produce interferencia entre subportadoras. Por lo tanto, es necesario la disponibilidad de mecanismos de sincronización eficientes para corregir los errores en frecuencia
+
+La técnica de acceso múltiple SC-FDMA (contiene una única portadora) utilizada en elenlace ascendente de LTE presenta las siguientes ventajas:
+- Variaciones reducidas en la potencia instantánea de la señal transmitida.
+- Posibilidad de llevar a cabo de forma sencilla mecanismos de ecualización en el dominio de la frecuencia
+- Capacidad de proporcionar una asignación de banda flexible

@@ -1,0 +1,71 @@
+Unicast global 0010:0:abcd:fe::1/48
+Unicast unique-local FC01:5668:4534:fe::1
+Unicast link-local FE80::1
+
+//Ejercicio 1
+- Las direcciones en ipv4 con de 32 bits mientras que en ipv6 son de 128
+- En ipv4 hay un campo que indica fragmentación y en ipv6 se remueve de la cabecera básica (ya que la fragmentación no se realiza en todos los nodos sino solamente en el primero)
+- El checksum de ipv4 a ipv6 se retiró de la cabecera
+- En ipv6 la cabecera era de 20 bytes pero en ipv6 es de 40 bytes
+- El TTL (time to live) se convierte en el Next Hop (siguiente salto)
+
+//Ejercicio 2
+Las cabeceras de extensión son un mecanismo que permite aNadir funcionalidad. Disminuye el procesamiento de elementos de red intermedios (Excepto en la extensión hop-by-hop options)
+
+//Ejercicio 3
+S----(MTU 1600)----R1----(MTU 1400)----R2----(MTU 1300)----R3----(MTU 1400)----D
+
+--Inciso a
+S----(MTU 1600)----R1----(MTU 1400)----R2----(MTU 1300)----R3----(MTU 1400)----D
+-----------------------------> ipv6 - MTU:1600
+<----------------------------- icmp error - MTU:1400
+-------------------------------------------------> ipv6 - MTU:1400
+<------------------------------------------------- icmp error - MTU:1300
+------------------------------------------------------------------------> ipv6 + cabecera fragmentado - MTU:1300
+------------------------------------------------------------------------> ipv6 + cabecera fragmentado - MTU:1300
+<------------------------------------------------------------------------ Acknogledge
+
+--Inciso b
+En IPv4 la fragmentación se podia realizar en todos los nodos intermedios potencialmente.
+
+//Ejercicio 4
+a)
+FF01:0000:0000:0000:0000:0000:0000:0001
+Compactado: FF01::1
+
+b)
+2001:0000:1234:0000:0000:C1C0:ABCD:0876
+Compactado: 2001:0:1234::C1C0:ABCD:876
+
+//Ejercicio 5
+En la teoria
+
+//Ejercicio 6
+a) 2001:DB8:0:8::/61
+2001:DB8:0:8:: a 2001:DB8:0:F:FFFF:FFFF:FFFF:FFFF
+
+b) 2001:0:0:AD00::/56
+2001:0:0:AD00:: a 2001:0:0:ADFF:FFFF:FFFF:FFFF:FFFF
+
+//Ejercicio 7
+Red 1 -> 192.0.0.2/24 -> 0:0:0:0:0:FFFF:C000:0002
+Red 2 -> 203.0.113.0/24 -> 0:0:0:0:0:FFFF:CB00:7100
+Red 3 -> 198.51.100.0/24 -> 0:0:0:0:0:FFFF:C633:6400
+
+
+//Ejercicio 8
+No se hace
+
+//Ejercicio 9
+Red1: 2001:DB8:1234:1::/56
+Red2: 2001:DB8:1234:2::/56
+Red3: 2001:DB8:1234:3::/56
+
+A: FE80::100:0CFF:FE00:707
+B: FE80::100:0CFF:FE00:713
+C: FE80::100:0CFF:FE00:1201
+
+Red1: FD00:1234:0:1::/48
+Red2: FD00:1234:0:2::/48
+Red3: FD00:1234:0:3::/48
+
