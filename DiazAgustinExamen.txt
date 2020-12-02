@@ -1,0 +1,88 @@
+Agustin Diaz
+
+1) Dada la siguiente arquitectura de red y el conjunto de direcciones 
+IPv4 129.10.9.0/24 asigando por el proveedor de Internet a la empresa. 
+Se necesita direccionar 
+    61 PCs en la Red 1, 
+    45 PCs en la Red 2 y 
+    15 PCs en la Red 3.
+
+a) Asignar IPs y mascaras detallando el razonamiento en binario. 
+Asignar todas las interfaces necesarias.
+
+b) Realizar las tablas de ruteo de los tres routers.
+
+
+Resolución:
+a)
+
+129.10.9.0/24
+Necesitaremos 61 hosts para la red con más hosts
+
+Por lo tanto haré un subneteo dejando 6 bits para hosts 
+(ya que 2^6 = 64 y entonces nos quedaran 62 hosts disponibles)
+
+Además nos quedarán 2 bits para subredes, lo cual nos permite hacer 2^2 = 4 subredes
+(en nuestro caso utilizaremos 3 y una para internet)
+Por esto, no nos será necesario otro subneteo
+
+Entonces el último octeto nos queda
+    SSHHHHHH
+    donde 
+        S representa un bit designado a subredes
+        H representa un bit designado a hosts
+
+Por ende nos queda una máscara de 
+    24                      +                           2                 = 26 bits
+    (máscara asignada por el proveedor de Internet)     (bits de subredes)
+
+Entonces definimos las redes:
+
+            Dirección IPv4          Último octeto en bits       Máscara
+Red 1       129.10.9.0              (00 000000)                 /26
+Red 2       129.10.9.64             (01 000000)                 /26
+Red 3       129.10.9.128            (10 000000)                 /26
+Internet    129.10.9.192            (11 000000)                 /26
+
+
+Asginamos las interfaces a los routers:
+R1
+    Interfaz Red 3      129.10.9.129 
+    Interfaz Internet   129.10.9.193
+R2
+    Interfaz Red 2      129.10.9.65
+    Interfaz Red 3      129.10.9.130
+R3
+    Interfaz Red 1      129.10.9.1
+    Interfaz Red 2      129.10.9.66
+
+
+b)
+
+Tablas de Ruteo:
+
+R1
+              Dirección IPv4        Máscara         Gateway
+(Red 1)       129.10.9.0            /26             129.10.9.130 (R2 Interfaz Red 3)
+(Red 2)       129.10.9.64           /26             129.10.9.130 (R2 Interfaz Red 3)
+(Red 3)       129.10.9.128          /26             Entrega Directa
+(Internet)    129.10.9.192          /26             Entrega Directa
+
+
+R2
+              Dirección IPv4        Máscara         Gateway
+(Red 1)       129.10.9.0            /26             129.10.9.66 (R3 Interfaz Red 2)
+(Red 2)       129.10.9.64           /26             Entrega Directa
+(Red 3)       129.10.9.128          /26             Entrega Directa
+(Internet)    129.10.9.192          /26             129.10.9.129 (R1 Interfaz Red 3)
+
+
+R3
+              Dirección IPv4        Máscara         Gateway
+(Red 1)       129.10.9.0            /26             Entrega Directa
+(Red 2)       129.10.9.64           /26             Entrega Directa
+(Red 3)       129.10.9.128          /26             129.10.9.65 (R2 Interfaz Red 2)
+(Internet)    129.10.9.192          /26             129.10.9.65 (R2 Interfaz Red 2)
+
+
+
