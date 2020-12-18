@@ -19,6 +19,25 @@
 # Acceso remoto (ssh) puerto 22 / tcp
 # Proxy Web () puerto 3128 / tcp 
 
+
+
+
+Consultas iptables:
+
+s i, d o necesarios los 2?
+corrige optimización?
+DMZ necesita NAT? Suponemos IPpúblicas y privadas?
+to = to-source, to-destination? Cómo hacemos el DNAT
+
+Consultas:
+Manuscrito o digital?
+Teórico aparte?
+
+
+
+
+
+
 #Ejercicio 20171130
 # Notas: algunas lineas se pueden compactar:
   - m multiport
@@ -111,6 +130,7 @@ case $1 in
   # Ej 5 - Nateo de PCs de la LAN a internet
   $I -t nat -A POSTROUTING -s $LAN -d $INET -o $IF_INET -j SNAT -to--source $INET
 
+  # Hacen falta NAT de la DMZ ya que es privada 
   # Ej 7 - Nateo de Servidores de la DMZ a internet
   $I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -j SNAT -to--source $INET
 
@@ -235,11 +255,12 @@ $I -A OUTPUT -d $PROXY -o $IF_DMZ -p tcp --dport 3128 -j ACCEPT
 # Ej 3
 $I -t nat -A POSTROUTING -s $LAN -d $INET -o $IF_INET -j SNAT -to--source $INET
 
-# Ej 4 
-$I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -j SNAT -to--source $INET
+# No hacemos estos nat ya que tienen direcciones públicas
+# # Ej 4 
+# $I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -j SNAT -to--source $INET
 
-# Ej 5
-$I -t nat -A PREROUTING -s $INET -i $IF_INET -d $DMZ -j DNAT -to $DMZ
+# # Ej 5
+# $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $DMZ -j DNAT -to $DMZ
 
 ;;
 
@@ -285,7 +306,6 @@ IF_INET=eth3
 
 I=/sbin/iptables
 
-
 # Tabla FILTER
 # Policy
 $I -p FORWARD DROP 
@@ -319,6 +339,7 @@ $I -A FORWARD -s $DMZ -i $IF_DMZ -d $INET -o $IF_INET -p tcp --dport 53 -j ACCEP
 $I -A FORWARD -s $DMZ -i $IF_DMZ -d $DB -o $IF_SERV -p tcp --dport 3306 -j ACCEPT
 
 # Ej 4 - La red de Servers no tiene ningún tipo de acceso (excepto para responder al servidor web)
+# no es necesaria por la policy si quisiera droppear
 $I -A FORWARD -s $SERV -i $IF_SERV -j REJECT
 # No se aceptan nuevas conexiones (recordar que a partir del stateful, solamente trabajamos con NEW)
 # $I -A FORWARD -s $SERV -i $IF_SERV -d $S1 -o $IF_SERV -j ACCEPT
@@ -329,97 +350,19 @@ $I -A FORWARD -s $SERV -i $IF_SERV -j REJECT
 # Ej 1
 $I -t nat -A POSTROUTING -s $LAN -d $INET -o $IF_INET -j SNAT -to $INET
 
-# Ej 2
-for protocolo in udp, tcp; do
-    $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $S1 -p protocolo --dport 53 -j DNAT -to $S1
-    $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $S2 -p protocolo --dport 53 -j DNAT -to $S2
-done
+# No hacemos estos nat ya que tienen direcciones públicas
+# # Ej 2
+# for protocolo in udp, tcp; do
+#     $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $S1 -p protocolo --dport 53 -j DNAT -to $S1
+#     $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $S2 -p protocolo --dport 53 -j DNAT -to $S2
+# done
 
-$I -t nat -A PREROUTING -s $INET -i $IF_INET -d $S1 -m multiport \ 
-    -p tcp --dports 80, 443 -j DNAT -to $S1
+# $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $S1 -m multiport \ 
+#     -p tcp --dports 80, 443 -j DNAT -to $S1
 
-# Ej 3
-$I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -p tcp --dport 53 -j SNAT -to $INET
-$I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -p udp --dport 53 -j SNAT -to $INET
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Solución Ejercicio 20201216 por Kohan
-
-#!/bin/bash
-# Esta versión es la que se desarrolló durante la clase del
-# 16/12/20 - no está revisada ni editada -
-
-IF_LAN=eth0
-IF_DMZ=eth2
-IF_SRV=eth1
-IF_INET=eth3
-LAN=10.0.1.0/24
-SERVERS=10.0.2.0/24
-S1=181.16.1.18
-S2=181.16.1.19
-I=/sbin/iptables
-
-case $1 in 
-	start)
-
-$I -P FORWARD DROP
-
-# Reglas de estado.  ( -m Indica modulo nuevo ).  ( otros estados: NEW, INVALID) 
-$I -A FORWARD -m state --state INVALID -j DROP 
-$I -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-
-# LAN no puede acceder a servidores.
-$I -A FORWARD -s $LAN -d $SERVERS -j REJECT
-# LAN tiene acceso libre a todo lo demás.
-$I -A FORWARD -i $IF_LAN -s $LAN -j ACCEPT # Doble evaluacion de origen.
-
-#Desde afuera solo accesos limitados a DMZ...
-# S1 solo DNS y Web (seguro y no seguro)
-$I -A FORWARD -m multiport -i $IF_INET -d $S1 -p tcp --dports 53,80,443 -j ACCEPT
-$I -A FORWARD -i $IF_INET -d $S1 -p udp --dport 53 -j ACCEPT
-
-# S2 solo DNS
-$I -A FORWARD -i $IF_INET -d $S2 -p udp --dport 53 -j ACCEPT
-$I -A FORWARD -i $IF_INET -d $S2 -p tcp --dport 53 -j ACCEPT
-
-# Resto desde afuera no permito.
-$I -A FORWARD -i $IF_INET -j DROP
-
-# Desde la DMZ solo consultas DNS al exterior
-$I -A FORWARD -i $IF_DMZ -o $IF_INET -p udp --dport 53 -j ACCEPT
-$I -A FORWARD -i $IF_DMZ -o $IF_INET -p tcp --dport 53 -j ACCEPT
-
-# Desde DMZ solo consultas al servidor de base de datos.
-$I -A FORWARD -i $IF_DMZ -o $IF_SRV -d 10.0.2.3 -p tcp --dport 3306 -j ACCEPT
-
-# Desde la DMZ nada mas.
-$I -A FORWARD -i $IF_DMZ -j REJECT
-
-# Desde la red de Servidores no tiene mas acceso.
-# Aca si aprovecho el -P DROP (Si quisiera que rechaze con 
-# REJECT, haria para IF_SRV una regla igual a la anterior.)
-
-# Fin de la tabla Filter.
-
-# Tabla NAT
-# Nateo las IP para que puedan navegar. La IP del router es fija, o sea uso SNAT.
-
-# Si fuera dinamica usaria MASQUERADE.
-$I -t nat -A POSTROUTING -s $LAN -j SNAT --to 200.3.1.2
+# # Ej 3
+# $I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -p tcp --dport 53 -j SNAT -to $INET
+# $I -t nat -A POSTROUTING -s $DMZ -d $INET -o $IF_INET -p udp --dport 53 -j SNAT -to $INET
 
 ;;
 
@@ -427,14 +370,14 @@ $I -t nat -A POSTROUTING -s $LAN -j SNAT --to 200.3.1.2
 	$I -P INPUT ACCEPT
 	$I -F 
 	$I -F -t nat
-
+;;
 	restart)
 	$0 stop
 	$0 start
 ;;
 	*)
 
-	echo error de sintaxis
+	echo "Error de sintaxis"
 
 	;;
 esac
