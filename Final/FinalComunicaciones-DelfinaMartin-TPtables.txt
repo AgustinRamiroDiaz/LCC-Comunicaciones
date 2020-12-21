@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#Constantes
+#COMPLETAR
+
+I=/sbin/iptables
+
+# Flusheeo reglas anteriores
+$I -F #tabla filter
+$I -F -t nat
+
+case $1 in
+  start)
+  
+    # Política por defecto: droppear paquetes
+    $I -P FORWARD DROP
+    # Se pueden agregar cadenas de INPUT y OUTPUT
+
+    # Reglas de estado, se necesitan para un router stateful
+    $I -A FORWARD -m state --state INVALID -j DROP
+    $I -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+    # Si llega hasta acá es porque los paquetes son NEW
+
+    #$I -A FORWARD -s $... -i $... -d $... -o $... -p ... --dport ... -j ACCEPT
+    #$I -A FORWARD -s $... -i $... -d $... -o $... -p ... -m multiport \
+    #  --dports ...,... -j ACCEPT
+
+    #--------------------
+    # Tabla filter
+    #COMPLETAR
+
+    #--------------------
+    # Tabla NAT
+    #COMPLETAR
+
+    # Postrouting - No está disponible  -i
+    $I -t nat -A POSTROUTING -s $LAN -d $INET -o $IF_INET -j SNAT --to $INET
+
+    # Prerouting - No está disponible  -o
+    $I -t nat -A PREROUTING -s $INET -i $IF_INET -d $LAN -j DNAT --to $LAN
+;;
+  stop)
+    $I -F #tabla filter
+    $I -F -t nat
+;;
+  *)
+    echo "Error de sintaxis"
+    exit 1
+;;
+esac

@@ -5,8 +5,8 @@ En ejercicios resueltos.
 Si una red está forma por 5 dispositivos y se produce una falla en la conexión con la topología
 - Malla: la red prácticamente no sufre interrupciones
 - Estrella: si ocurre en el nodo central, la red se detiene. Si no, solamente se daNa el módulo del nodo que se detuvo.
-- Bus: se detiene toda la red
-- Anillo: se detiene una porción de la red.
+- Bus: se parte en 2 subredes
+- Anillo: la red solo tendrá un camino.
 
 // Ejercicio 3
 fMax = 20KHz. Por el teorema de Nyquist se deben emplear al menos dos muestras por período. Fmuestreo > 2 fMax -> Fmuestreo > 40KHz
@@ -46,6 +46,7 @@ Funciones de la subcapa LLC (control de enlace lógico):
   - provee una interfaz de servicio hacia las capas superiores además de realizar control de flujo y errores
 
 //Ejercicio 9
+Bytes bandera con relleno de bytes
 El enmarcado corresponde a orientados a caracteres de inicio y final con caracteres de relleno
 
 DLE-STX ----> inicio de la trama
@@ -53,7 +54,7 @@ DLE-ETX -----> fin de la trama
 
 DLE-STX-STX-DLE-DLE-ABC-DLE-ETX-DLE-BCD-DLE-STX
 (DLE-STX)-STX-(DLE-DLE)-ABC-(DLE-ETX)      (se ignora)-DLE-BCD-DLE-STX
-inicio       duplicación   fin
+inicio       duplicación     fin
 
 Mensaje original: STX-DLE-ABC
 
@@ -67,10 +68,10 @@ Sin conexión y sin reconocimiento (los errores son improbables)
 Sin conexión y con reconocimiento (se confirma la recepción o se reenvia)
 
   - Necesita transmitir en tiempo real
-Con conexión y con reconocimiento (garantía de orden y de no errores)
+Sin conexión y sin reconocimiento 
 
   - Datos multimedia con control de errores
-Con conexión y sin reconocimiento (se establece la conexión y se garantiza orden y correctitud)
+Con conexión y con reconocimiento (se establece la conexión y se garantiza orden y correctitud)
 
 //Ejercicio 11
 Ver diapos
@@ -79,7 +80,10 @@ Ver diapos
 En el papel
 
 //Ejercicio 13
-El problema de la estación oculta se da cuando 3 máquinas A, B y C se disponen de forma que: A y C están al alcance de B, pero A no está en el alcance de C y viceversa. Cuando A quiere transmitir a C, A detecta el medio libre y transmite. Mientras A transmite, C transmite porque también detecta el medio libre y se produce una colisión en B.
+El problema de la estación oculta se da cuando 3 máquinas A, B y C se disponen de forma que: 
+A y C están al alcance de B, pero A no está en el alcance de C y viceversa. 
+Cuando A quiere transmitir a C, A detecta el medio libre y transmite. 
+Mientras A transmite, C transmite porque también detecta el medio libre y se produce una colisión en B.
 
 El problema se soluciona mediante un protocolo CSMA/CD con estilo MACAW (que implementa tramas de control como RTS, CTS, ACK y NAV).
 
@@ -113,7 +117,9 @@ A se estaba comunicando con B y cuando termina C se quiere comunicar con A. Adem
 Ejemplo particular: todas en la misma red (hay que agregar NAVs)
 
 //Ejercicio 16
-Si un nodo funcionara como maestro en dos piconets, los nodos esclavos de ambas piconets responderían a el por lo que en realidad sería una piconet con hasta 14 esclavos, lo cual no es posible.
+Si un nodo funcionara como maestro en dos piconets, los nodos esclavos de ambas piconets 
+responderían a el por lo que en realidad sería una piconet con hasta 14 esclavos, 
+lo cual no es posible.
 
 //Ejercicio 17
 La versión 4 también tiene modo clásico o modo de alta velocidad.
@@ -160,7 +166,7 @@ Desventajas de OFMDA:
 - Elevada relación entre la potencia instantánea y la potencia media
 - Susceptibilidad  frente a  errores  de frecuencia: Cuando existen desplazamientos  en la frecuencia   de   las   subportadoras   respecto   de   su   frecuencia   de   referencia   se   produce interferencia entre subportadoras. Por lo tanto, es necesario la disponibilidad de mecanismos de sincronización eficientes para corregir los errores en frecuencia
 
-La técnica de acceso múltiple SC-FDMA (contiene una única portadora) utilizada en elenlace ascendente de LTE presenta las siguientes ventajas:
+La técnica de acceso múltiple SC-FDMA (contiene una única portadora) utilizada en el enlace ascendente de LTE presenta las siguientes ventajas:
 - Variaciones reducidas en la potencia instantánea de la señal transmitida.
 - Posibilidad de llevar a cabo de forma sencilla mecanismos de ecualización en el dominio de la frecuencia
 - Capacidad de proporcionar una asignación de banda flexible

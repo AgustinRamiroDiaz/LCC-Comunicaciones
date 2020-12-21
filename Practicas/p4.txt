@@ -11,7 +11,7 @@ pc8: 192.168.0.108
 pc9: 192.168.0.109
 pc10: 192.168.0.110
 pc11 (web server): 192.168.0.111
-pc11 (dns-mail server): 192.168.0.112
+pc12 (dns-mail server): 192.168.0.112
 
 Dominio: fceia.unr.ar
 
@@ -28,17 +28,17 @@ zone "localhost"{
   file "etc/bind/db.local";
 };
 
-zone "127.in-addr-.arpa"{
+zone "127.in-addr.arpa"{
   type master;
   file "etc/bind/db.127";
 };
 
-zone "0.in-addr-.arpa"{
+zone "0.in-addr.arpa"{
   type master;
   file "etc/bind/db.0";
 };
 
-zone "255.in-addr-.arpa"{
+zone "255.in-addr.arpa"{
   type master;
   file "etc/bind/db.255";
 };
@@ -80,6 +80,8 @@ pc7.fceia.unr.ar. IN A 192.168.0.107
 pc8.fceia.unr.ar. IN A 192.168.0.108
 pc9.fceia.unr.ar. IN A 192.168.0.109
 pc10.fceia.unr.ar. IN A 192.168.0.110
+pc11.fceia.unr.ar. IN A 192.168.0.111
+pc12.fceia.unr.ar. IN A 192.168.0.112
 www.fceia.unr.ar. IN A 192.168.0.111
 dns.fceia.unr.ar. IN A 192.168.0.112
 mail.fceia.unr.ar. IN A 192.168.0.112
@@ -90,7 +92,7 @@ mail.fceia.unr.ar. IN A 192.168.0.112
 fceia.unr.ar. IN SOA dns.fceia.unr.ar. admin.fceia.unr.ar {2020111813; 604800;
 86400; 2419200; 604800};
 
- IN NS dns.fceia.unr.ar. //REVISAR
+ IN NS dns.fceia.unr.ar.
 
 101.0.168.192.IN-ADDR.ARPA. IN PTR pc1.fceia.unr.ar. 
 102.0.168.192.IN-ADDR.ARPA. IN PTR pc2.fceia.unr.ar. 
@@ -102,6 +104,8 @@ fceia.unr.ar. IN SOA dns.fceia.unr.ar. admin.fceia.unr.ar {2020111813; 604800;
 108.0.168.192.IN-ADDR.ARPA. IN PTR pc8.fceia.unr.ar. 
 109.0.168.192.IN-ADDR.ARPA. IN PTR pc9.fceia.unr.ar. 
 110.0.168.192.IN-ADDR.ARPA. IN PTR pc10.fceia.unr.ar. 
+111.0.168.192.IN-ADDR.ARPA. IN PTR pc11.fceia.unr.ar. 
+112.0.168.192.IN-ADDR.ARPA. IN PTR pc12.fceia.unr.ar. 
 111.0.168.192.IN-ADDR.ARPA. IN PTR www.fceia.unr.ar. 
 112.0.168.192.IN-ADDR.ARPA. IN PTR dns.fceia.unr.ar. 
 112.0.168.192.IN-ADDR.ARPA. IN PTR mail.fceia.unr.ar.
@@ -113,7 +117,7 @@ red2: 200.13.147.64/27
 red3: 200.13.147.96/27
 
 Dominio principal: netflix.ar
-Dominio principal: lucifer.netflix.ar
+Dominio secundario: lucifer.netflix.ar
 
 ns1.netflix.ar es maestro para la resolución directa e inversa
 200.13.147.60
@@ -122,7 +126,7 @@ ns2.netflix.ar es esclavo para la resolución directa
 200.13.147.90
 
 servidor de mail primario: mx.netflix.ar - 200.13.147.59
-servidor de mail primario: mx.lucifer.netflix.ar - 200.13.147.113
+servidor de mail secundario: mx.lucifer.netflix.ar - 200.13.147.113
 
 // --------------------------------------
 // En named.conf de ns1
@@ -135,7 +139,7 @@ zone "netflix.ar"{
   allow-transfer{slaves};
 };
 
-// Busquedas indirectas
+// Busquedas inversa
 zone "147.13.200.in-addr.arpa"{
   type master;
   file "etc/bind/rev.netflix";
@@ -164,14 +168,16 @@ IN NS ns2.lucifer.netflix.ar
 IN MX 10 mx.netflix.ar
 IN MX 20 mx.lucifer.netflix.ar
 
-www IN A 200.13.147.60
-ns1 IN CNAME www
-ns2 IN A 200.13.147.90
+# Equivalente a: ns1 IN A 200.13.147.60
+domainNameServer IN A 200.13.147.60
+ns1 IN CNAME domainNameServer
+
+ns2.lucifer IN A 200.13.147.90
 mx IN A 200.13.147.59
 mx.lucifer IN A 200.13.147.113
 
 // --------------------------------------
-// En rev.netflix en ns1 (igual para ns2)
+// En rev.netflix en ns1
 
 $TTL 1D
 $Origin 147.13.200.in-addr.arpa.
@@ -180,8 +186,97 @@ $Origin 147.13.200.in-addr.arpa.
 
 IN NS ns1.netflix.ar
 
-60 IN A www.netflix.ar
+60 IN PTR www.netflix.ar
 60 IN PTR ns1.netflix.ar
 90 IN PTR ns2.netflix.ar
-59 IN A mx.netflix.ar
-113 IN A mx.lucifer.netflix.ar
+59 IN PTR mx.netflix.ar
+113 IN PTR mx.lucifer.netflix.ar
+
+
+
+
+
+#Ejercicio 4
+
+// named.conf de ns1
+// Es servidor DNS para consultas al dominio music.com
+
+// Busquedas directas
+zone "music.com"{
+  type master;
+  file "etc/bind/db.music";
+};
+
+// Busquedas indirectas
+zone "235.168.192.in-addr.arpa"{
+  type master;
+  file "etc/bind/rev.music";
+};
+
+// También está el subdominio greenday.music.com
+zone "greenday.music.com"{
+  type slave;
+  file "etc/bind/db.greenday.music";
+  masters {192.168.235.160} // delegado a ns
+};
+
+// Busquedas indirectas
+zone "128/25.235.168.192.in-addr.arpa"{ // Direcciones de hosts pertenecientes a greenday.music.com
+  type slave;
+  file "etc/bind/rev.greenday.music";
+  masters {192.168.235.160} // delegado a ns
+};
+
+// Para el dominio acme.ar, el servidor esclavo 
+zone "acme.es" {
+    type slave;
+    masters {192.168.254.237;};
+    file “/etc/bind/db.acme”;
+}
+
+
+// named.conf en ns.greenday.music.com
+// ns.greenday.music.com es maestro para ns en este esquema
+zone "greenday.music.com" {
+    type master;
+    file “/etc/bind/db.greenday.music;
+}
+
+zone "128/25.235.168.192.in-addr.arpa" {
+    type master;
+    file “/etc/bind/rev.greenday.music;
+}
+
+
+
+// db.music en ns1 o ns2
+// El autoritativo es ns1
+music.com. IN SOA ns1.music.com. admin.ns1.music.com {2020111813; 604800;
+86400; 2419200; 604800};
+
+music.com. IN NS ns1.music.com.     // Puede resolver las consultas de music.com ns1
+music.com. IN NS ns2.music.com.     // o ns2
+
+ns1.music.com. IN A 192.168.235.1   // Sus direcciones
+ns2.music.com. IN A 192.168.235.2
+
+greenday.music.com. IN NS ns1.music.com         // Las consultas de greenday las resuelven ns1
+greenday.music.com. IN NS ns.greenday.music.com // y ns
+
+ns.greenday.music.com IN A 192.168.235.160  // La direccion
+
+
+
+// db.greenday.music en ns
+// El autoritativo es ns
+greenday.music.com. IN SOA ns.greenday.music.com. mailAdmin {2020122100; 5h;
+15m; 3W12h; 2h20m};
+
+greenday.music.com. IN NS ns.greenday.music.com.    // Lo puede resolver ns
+greenday.music.com. IN NS ns1.music.com.            // o ns1
+
+ns.greenday.music.com. IN A 192.168.235.160         // Las direcciones
+ns1.music.com. IN A 192.168.235.1
+
+
+

@@ -10,7 +10,9 @@ Unicast link-local FE80::1
 - El TTL (time to live) se convierte en el Next Hop (siguiente salto)
 
 //Ejercicio 2
-Las cabeceras de extensión son un mecanismo que permite aNadir funcionalidad. Disminuye el procesamiento de elementos de red intermedios (Excepto en la extensión hop-by-hop options)
+Las cabeceras de extensión son un mecanismo que permite aNadir funcionalidad. 
+Disminuye el procesamiento de elementos de red intermedios 
+(Excepto en la extensión hop-by-hop options)
 
 //Ejercicio 3
 S----(MTU 1600)----R1----(MTU 1400)----R2----(MTU 1300)----R3----(MTU 1400)----D
@@ -23,7 +25,7 @@ S----(MTU 1600)----R1----(MTU 1400)----R2----(MTU 1300)----R3----(MTU 1400)----D
 <------------------------------------------------- icmp error - MTU:1300
 ------------------------------------------------------------------------> ipv6 + cabecera fragmentado - MTU:1300
 ------------------------------------------------------------------------> ipv6 + cabecera fragmentado - MTU:1300
-<------------------------------------------------------------------------ Acknogledge
+<------------------------------------------------------------------------ Acknowledge
 
 --Inciso b
 En IPv4 la fragmentación se podia realizar en todos los nodos intermedios potencialmente.
